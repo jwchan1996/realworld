@@ -1,0 +1,15 @@
+{
+  "name": "realworld",
+  "version": "1.0.0",
+  "main": "index.js",
+  "repository": "https://github.com/jwchan1996/realworld.git",
+  "author": "“jwchan1 <741755613@qq.com>",
+  "license": "MIT",
+  "scripts": {
+    "dev": "nuxt"
+  },
+  "dependencies": {
+    "axios": "^0.21.1",
+    "nuxt": "^2.14.12"
+  }
+}
