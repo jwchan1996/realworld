@@ -62,6 +62,7 @@ import { login, register } from '@/api/user'
 const Cookie = process.client ? require('js-cookie') : undefined
 
 export default {
+  middleware: 'noAuthenticated',
   name: 'LoginIndex',
   data () {
     return {
@@ -108,7 +109,7 @@ export default {
 
           // 为了防止刷新页面数据丢失，我们需要把数据持久化
           Cookie.set('user', response.data.user)
-          
+
           // 跳转到首页
           this.$router.push('/')
         }).catch(error => {
