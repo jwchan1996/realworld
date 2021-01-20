@@ -11,7 +11,9 @@
           </p>
 
           <ul class="error-messages">
-            <li>That email is already taken</li>
+            <template v-for="(messages, field) in errors">
+              <li v-for="(message, index) in messages" :key="index">{{ field }} {{ message }}</li>
+            </template>
           </ul>
 
           <form @submit.prevent="onSubmit">
@@ -20,14 +22,16 @@
                 class="form-control form-control-lg"
                 type="text"
                 placeholder="Your Name"
+                required
               />
             </fieldset>
             <fieldset class="form-group">
               <input
                 class="form-control form-control-lg"
-                type="text"
+                type="email"
                 placeholder="Email"
                 v-model="user.email"
+                required
               />
             </fieldset>
             <fieldset class="form-group">
@@ -36,6 +40,7 @@
                 type="password"
                 placeholder="Password"
                 v-model="user.password"
+                required
               />
             </fieldset>
             <button class="btn btn-lg btn-primary pull-xs-right">
@@ -58,7 +63,8 @@ export default {
       user: {
         email: '',
         password: ''
-      }
+      },
+      errors: {}  // 错误信息
     }
   },
   computed: {
@@ -69,15 +75,18 @@ export default {
   methods: {
     async onSubmit () {
       // 提交表单请求登录
-      const { data } = await login({
+      await login({
         user: this.user
+      }).then(response => {
+        console.log(response)
+        // TODO: 保存用户登录状态
+
+        // 跳转到首页
+        this.$router.push('/')
+      }).catch(error => {
+        console.dir(error)
+        this.errors = error.response.data.errors
       })
-
-      console.log(data)
-      // TODO: 保存用户登录状态
-
-      // 跳转到首页
-      this.$router.push('/')
     }
   }
 };
