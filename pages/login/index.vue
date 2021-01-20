@@ -57,6 +57,9 @@
 
 <script>
 import { login, register } from '@/api/user'
+// 只在客户端加载 js-cookie 包
+// process.client 是 nuxt 提供的对象属性
+const Cookie = process.client ? require('js-cookie') : undefined
 
 export default {
   name: 'LoginIndex',
@@ -84,7 +87,11 @@ export default {
         }).then(response => {
           console.log(response)
           // TODO: 保存用户登录状态
-          this.$store.commit('setUser', data.user)
+          this.$store.commit('setUser', response.data.user)
+
+          // 为了防止刷新页面数据丢失，我们需要把数据持久化
+          Cookie.set('user', response.data.user)
+
           // 跳转到首页
           this.$router.push('/')
         }).catch(error => {
@@ -97,7 +104,11 @@ export default {
         }).then(response => {
           console.log(response)
           // TODO: 保存用户登录状态
-          this.$store.commit('setUser', data.user)
+          this.$store.commit('setUser', response.data.user)
+
+          // 为了防止刷新页面数据丢失，我们需要把数据持久化
+          Cookie.set('user', response.data.user)
+          
           // 跳转到首页
           this.$router.push('/')
         }).catch(error => {
