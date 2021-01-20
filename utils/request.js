@@ -5,7 +5,7 @@
 import axios from 'axios'
 
 const request = axios.create({
-  baseUrl:'https://conduit.productionready.io'
+  baseURL: 'https://conduit.productionready.io/'
 })
 
 // 请求拦截器

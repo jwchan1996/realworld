@@ -14,7 +14,7 @@
             <li>That email is already taken</li>
           </ul>
 
-          <form>
+          <form @submit.prevent="onSubmit">
             <fieldset class="form-group" v-if="!isLogin">
               <input
                 class="form-control form-control-lg"
@@ -27,6 +27,7 @@
                 class="form-control form-control-lg"
                 type="text"
                 placeholder="Email"
+                v-model="user.email"
               />
             </fieldset>
             <fieldset class="form-group">
@@ -34,6 +35,7 @@
                 class="form-control form-control-lg"
                 type="password"
                 placeholder="Password"
+                v-model="user.password"
               />
             </fieldset>
             <button class="btn btn-lg btn-primary pull-xs-right">
@@ -47,11 +49,35 @@
 </template>
 
 <script>
+import { login, register } from '@/api/user'
+
 export default {
-  name: 'Login',
+  name: 'LoginIndex',
+  data () {
+    return {
+      user: {
+        email: '',
+        password: ''
+      }
+    }
+  },
   computed: {
     isLogin () {
       return this.$route.name === 'login'
+    }
+  },
+  methods: {
+    async onSubmit () {
+      // 提交表单请求登录
+      const { data } = await login({
+        user: this.user
+      })
+
+      console.log(data)
+      // TODO: 保存用户登录状态
+
+      // 跳转到首页
+      this.$router.push('/')
     }
   }
 };
