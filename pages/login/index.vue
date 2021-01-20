@@ -84,7 +84,7 @@ export default {
         }).then(response => {
           console.log(response)
           // TODO: 保存用户登录状态
-
+          this.$store.commit('setUser', data.user)
           // 跳转到首页
           this.$router.push('/')
         }).catch(error => {
@@ -97,7 +97,7 @@ export default {
         }).then(response => {
           console.log(response)
           // TODO: 保存用户登录状态
-
+          this.$store.commit('setUser', data.user)
           // 跳转到首页
           this.$router.push('/')
         }).catch(error => {
