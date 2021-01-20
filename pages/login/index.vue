@@ -22,6 +22,7 @@
                 class="form-control form-control-lg"
                 type="text"
                 placeholder="Your Name"
+                v-model="user.username"
                 required
               />
             </fieldset>
@@ -41,6 +42,7 @@
                 placeholder="Password"
                 v-model="user.password"
                 required
+                minlength="8"
               />
             </fieldset>
             <button class="btn btn-lg btn-primary pull-xs-right">
@@ -61,6 +63,7 @@ export default {
   data () {
     return {
       user: {
+        username: '',
         email: '',
         password: ''
       },
@@ -75,18 +78,34 @@ export default {
   methods: {
     async onSubmit () {
       // 提交表单请求登录
-      await login({
-        user: this.user
-      }).then(response => {
-        console.log(response)
-        // TODO: 保存用户登录状态
+      if (this.isLogin) {
+        await login({
+          user: this.user
+        }).then(response => {
+          console.log(response)
+          // TODO: 保存用户登录状态
 
-        // 跳转到首页
-        this.$router.push('/')
-      }).catch(error => {
-        console.dir(error)
-        this.errors = error.response.data.errors
-      })
+          // 跳转到首页
+          this.$router.push('/')
+        }).catch(error => {
+          console.dir(error)
+          this.errors = error.response.data.errors
+        })
+      } else {
+        await register({
+          user: this.user
+        }).then(response => {
+          console.log(response)
+          // TODO: 保存用户登录状态
+
+          // 跳转到首页
+          this.$router.push('/')
+        }).catch(error => {
+          console.dir(error)
+          this.errors = error.response.data.errors
+        })
+      }
+      
     }
   }
 };
