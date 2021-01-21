@@ -12,11 +12,51 @@
         <div class="col-md-9">
           <div class="feed-toggle">
             <ul class="nav nav-pills outline-active">
-              <li class="nav-item">
-                <a class="nav-link disabled" href="">Your Feed</a>
+              <li class="nav-item" v-if="user">
+                <nuxt-link
+                  class="nav-link"
+                  :class="{
+                    active: tab === 'your_feed'
+                  }"
+                  :to="{
+                    name: 'home',
+                    query: {
+                      tab: 'your_feed',
+                    },
+                  }"
+                  exact
+                  >Your Feed</nuxt-link
+                >
               </li>
               <li class="nav-item">
-                <a class="nav-link active" href="">Global Feed</a>
+                <nuxt-link
+                  class="nav-link"
+                  :class="{
+                    active: tab === 'global_feed'
+                  }"
+                  :to="{
+                    name: 'home'
+                  }"
+                  exact
+                  >Global Feed</nuxt-link
+                >
+              </li>
+              <li class="nav-item" v-if="tag">
+                <nuxt-link
+                  class="nav-link"
+                  :class="{
+                    active: tab === 'tag'
+                  }"
+                  :to="{
+                    name: 'home',
+                    query: {
+                      tab: 'tag',
+                      tag: tag
+                    },
+                  }"
+                  exact
+                  >#{{ tag }}</nuxt-link
+                >
               </li>
             </ul>
           </div>
@@ -89,7 +129,7 @@
                   name: 'home',
                   query: {
                     page: item,
-                    tag: $route.query.tag
+                    tag: $route.query.tag,
                   },
                 }"
                 >{{ item }}</nuxt-link
@@ -107,13 +147,14 @@
                 :to="{
                   name: 'home',
                   query: {
-                    tag,
+                    tag: item,
+                    tab: 'tag'
                   },
                 }"
                 class="tag-pill tag-default"
-                v-for="tag in tags"
+                v-for="item in tags"
                 :key="tag"
-                >{{ tag }}</nuxt-link
+                >{{ item }}</nuxt-link
               >
             </div>
           </div>
@@ -126,6 +167,7 @@
 <script>
 import { getArticles } from "@/api/article";
 import { getTags } from "@/api/tag";
+import { mapState } from "vuex";
 
 export default {
   name: "HomeIndex",
@@ -133,6 +175,8 @@ export default {
     // 获取文章列表
     const page = Number.parseInt(query.page || 1);
     const limit = 20;
+    const tab = query.tab || 'global_feed'
+    const tag = query.tag
     /**
      * 将串行任务改成并行任务写法
      */
@@ -148,7 +192,7 @@ export default {
       getArticles({
         limit,
         offset: (page - 1) * limit,
-        tag: query.tag
+        tag: query.tag,
       }),
       getTags(),
     ]);
@@ -157,16 +201,19 @@ export default {
     const { tags } = tagsRes.data;
 
     return {
-      articles,
-      articlesCount,
-      tags,
-      limit,
-      page,
+      articles, // 文章列表
+      articlesCount, // 文章总数
+      tags, // 标签列表
+      limit, // 每页大小
+      page, // 页码
+      tab, // 选项卡
+      tag // 数据标签
     };
   },
   // watchQuery 可以监听 query 参数字符串的变化重新调用所有组件方法 (asyncData, fetch, validate, layout, ...)
-  watchQuery: ["page", "tag"],
+  watchQuery: ["page", "tag", "tab"],
   computed: {
+    ...mapState(["user"]),
     totalPage() {
       return Math.ceil(this.articlesCount / this.limit);
     },
