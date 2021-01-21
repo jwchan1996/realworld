@@ -41,3 +41,12 @@ export function getProfile (username) {
     url: `/api/profiles/${username}`
   })
 }
+
+// 更新用户信息
+export function updateUser (data) {
+  return request({
+    method: 'PUT',
+    url: '/api/user',
+    data
+  })
+}
