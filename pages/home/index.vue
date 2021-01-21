@@ -49,16 +49,22 @@
                 </nuxt-link>
                 <span class="date">{{ article.createdAt }}</span>
               </div>
-              <button class="btn btn-outline-primary btn-sm pull-xs-right" :class="{ active: article.favorited}">
+              <button
+                class="btn btn-outline-primary btn-sm pull-xs-right"
+                :class="{ active: article.favorited }"
+              >
                 <i class="ion-heart"></i> {{ article.favoritesCount }}
               </button>
             </div>
-            <nuxt-link class="preview-link" :to="{
-              name: 'article',
-              params: {
-                slug: article.slug
-              }
-            }">
+            <nuxt-link
+              class="preview-link"
+              :to="{
+                name: 'article',
+                params: {
+                  slug: article.slug,
+                },
+              }"
+            >
               <h1>{{ article.title }}</h1>
               <p>{{ article.description }}</p>
               <span>Read more...</span>
@@ -66,13 +72,13 @@
           </div>
         </div>
 
-        !-- 分页列表 -->
+        <!-- 分页列表 -->
         <nav>
           <ul class="pagination">
             <li
               class="page-item"
               :class="{
-                active: item === page
+                active: item === page,
               }"
               v-for="item in totalPage"
               :key="item"
@@ -82,28 +88,33 @@
                 :to="{
                   name: 'home',
                   query: {
-                    page: item
-                  }
+                    page: item,
+                    tag: $route.query.tag
+                  },
                 }"
-              >{{ item }}</nuxt-link>
+                >{{ item }}</nuxt-link
+              >
             </li>
           </ul>
         </nav>
-        <!-- /分页列表 -->
+        <!-- 分页列表 -->
 
         <div class="col-md-3">
           <div class="sidebar">
             <p>Popular Tags</p>
-
             <div class="tag-list">
-              <a href="" class="tag-pill tag-default">programming</a>
-              <a href="" class="tag-pill tag-default">javascript</a>
-              <a href="" class="tag-pill tag-default">emberjs</a>
-              <a href="" class="tag-pill tag-default">angularjs</a>
-              <a href="" class="tag-pill tag-default">react</a>
-              <a href="" class="tag-pill tag-default">mean</a>
-              <a href="" class="tag-pill tag-default">node</a>
-              <a href="" class="tag-pill tag-default">rails</a>
+              <nuxt-link
+                :to="{
+                  name: 'home',
+                  query: {
+                    tag,
+                  },
+                }"
+                class="tag-pill tag-default"
+                v-for="tag in tags"
+                :key="tag"
+                >{{ tag }}</nuxt-link
+              >
             </div>
           </div>
         </div>
@@ -114,30 +125,52 @@
 
 <script>
 import { getArticles } from "@/api/article";
+import { getTags } from "@/api/tag";
 
 export default {
   name: "HomeIndex",
   async asyncData({ query }) {
-    const page = Number.parseInt(query.page || 1)
-    const limit = 20
-    const { data } = await getArticles({
-      limit,
-      offset: (page - 1) * limit
-    });
+    // 获取文章列表
+    const page = Number.parseInt(query.page || 1);
+    const limit = 20;
+    /**
+     * 将串行任务改成并行任务写法
+     */
+    // const { data } = await getArticles({
+    //   limit,
+    //   offset: (page - 1) * limit
+    // });
+    // // 获取标签列表
+    // const { data: tagsData } =await getTags()
+
+    // 并行异步任务
+    const [articlesRes, tagsRes] = await Promise.all([
+      getArticles({
+        limit,
+        offset: (page - 1) * limit,
+        tag: query.tag
+      }),
+      getTags(),
+    ]);
+
+    const { articles, articlesCount } = articlesRes.data;
+    const { tags } = tagsRes.data;
+
     return {
-      articles: data.articles,
-      articlesCount: data.articlesCount,
+      articles,
+      articlesCount,
+      tags,
       limit,
-      page
+      page,
     };
   },
   // watchQuery 可以监听 query 参数字符串的变化重新调用所有组件方法 (asyncData, fetch, validate, layout, ...)
-  watchQuery: ['page'],
+  watchQuery: ["page", "tag"],
   computed: {
-    totalPage () {
-      return Math.ceil(this.articlesCount / this.limit)
-    }
-  }
+    totalPage() {
+      return Math.ceil(this.articlesCount / this.limit);
+    },
+  },
 };
 </script>
 
