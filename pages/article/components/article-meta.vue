@@ -29,7 +29,7 @@
       }"
       @click="onFollow"
       :disabled="isOnFollowing"
-      v-if="user.username !== article.author.username"
+      v-if="user && user.username !== article.author.username"
     >
       <i class="ion-plus-round"></i>
       &nbsp; {{ article.author.following ? "unFollow" : "Follow" }}
@@ -50,7 +50,7 @@
     <button
       class="btn btn-sm btn-outline-secondary"
       @click="clickEdit"
-      v-if="user.username === article.author.username"
+      v-if="user && user.username === article.author.username"
     >
       <i class="ion-edit"></i>
       &nbsp; Edit Article
@@ -58,7 +58,7 @@
     <button
       class="btn btn-sm btn-outline-danger"
       @click="clickDelete"
-      v-if="user.username === article.author.username"
+      v-if="user && user.username === article.author.username"
     >
       <i class="ion-trash-a"></i>
       &nbsp; Delete Article
