@@ -47,6 +47,10 @@
               </button>
             </fieldset>
           </form>
+
+          <button class="btn btn-outline-danger" @click="logout">
+            Or click here to logout.
+          </button>
         </div>
       </div>
     </div>
@@ -54,9 +58,23 @@
 </template>
 
 <script>
+import { mapMutations } from 'vuex'
+const Cookie = process.client ? require('js-cookie') : undefined
+
 export default {
   middleware: 'authenticated',
-  name: 'SettingIndex'
+  name: 'SettingIndex',
+  methods: {
+    ...mapMutations(['setUser']),
+    logout () {
+      // 删除 Cookie
+      Cookie.remove('user')
+      // 提交 mutation 修改 state 状态
+      this.setUser(null)
+      // 跳转首页
+      this.$router.push('/')
+    }
+  }
 };
 </script>
 
