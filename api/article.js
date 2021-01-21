@@ -1,17 +1,17 @@
-import Request from '@/utils/request'
+import { request } from '@/plugins/request'
 
 // 获取公共文章列表
 export function getArticles (params) {
-  return Request({
+  return request({
     method: 'GET',
     url: '/api/articles',
     params
   })
 }
 
-// 获取公共文章列表
+// 获取关注的用户文章列表
 export function getYourFeedArticles (params) {
-  return Request({
+  return request({
     method: 'GET',
     url: '/api/articles/feed',
     params,
@@ -24,7 +24,7 @@ export function getYourFeedArticles (params) {
 
 // 添加点赞
 export function addFavorite (slug) {
-  return Request({
+  return request({
     method: 'POST',
     url: `/api/articles/${slug}/favorite`
   })
@@ -32,7 +32,7 @@ export function addFavorite (slug) {
 
 // 取消点赞
 export function deleteFavorite (slug) {
-  return Request({
+  return request({
     method: 'DELETE',
     url: `/api/articles/${slug}/favorite`
   })
@@ -40,7 +40,7 @@ export function deleteFavorite (slug) {
 
 // 获取文章详情
 export function getArticle (slug) {
-  return Request({
+  return request({
     method: 'GET',
     url: `/api/articles/${slug}`
   })
@@ -48,7 +48,7 @@ export function getArticle (slug) {
 
 // 获取文章评论
 export function getComments (slug) {
-  return Request({
+  return request({
     method: 'GET',
     url: `/api/articles/${slug}/comments`
   })

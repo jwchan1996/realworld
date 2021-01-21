@@ -130,6 +130,7 @@
                   query: {
                     page: item,
                     tag: $route.query.tag,
+                    tab: tab
                   },
                 }"
                 >{{ item }}</nuxt-link
@@ -153,7 +154,7 @@
                 }"
                 class="tag-pill tag-default"
                 v-for="item in tags"
-                :key="tag"
+                :key="item"
                 >{{ item }}</nuxt-link
               >
             </div>
@@ -165,7 +166,7 @@
 </template>
 
 <script>
-import { getArticles } from "@/api/article";
+import { getArticles, getYourFeedArticles } from "@/api/article";
 import { getTags } from "@/api/tag";
 import { mapState } from "vuex";
 
@@ -177,6 +178,12 @@ export default {
     const limit = 20;
     const tab = query.tab || 'global_feed'
     const tag = query.tag
+
+    // 根据 tab 决定获取是否是获取关注用户的文章
+    const loadArticles = tab === 'global_feed'
+      ? getArticles
+      : getYourFeedArticles
+
     /**
      * 将串行任务改成并行任务写法
      */
@@ -189,7 +196,7 @@ export default {
 
     // 并行异步任务
     const [articlesRes, tagsRes] = await Promise.all([
-      getArticles({
+      loadArticles({
         limit,
         offset: (page - 1) * limit,
         tag: query.tag,

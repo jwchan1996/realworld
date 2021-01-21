@@ -1,8 +1,8 @@
-import Request from '@/utils/request'
+import { request } from '@/plugins/request'
 
 // 获取文章标签列表
 export function getTags () {
-  return Request({
+  return request({
     method: 'GET',
     url: '/api/tags'
   })

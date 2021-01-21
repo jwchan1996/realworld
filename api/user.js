@@ -1,8 +1,8 @@
-import Request from '@/utils/request'
+import { request } from '@/plugins/request'
 
 // 用户登录
 export function login(data) {
-  return Request({
+  return request({
     method: 'POST',
     url: '/api/users/login',
     data
@@ -11,7 +11,7 @@ export function login(data) {
 
 // 用户注册
 export function register(data) {
-  return Request({
+  return request({
     method: 'POST',
     url: '/api/users',
     data
