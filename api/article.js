@@ -53,3 +53,12 @@ export function getComments (slug) {
     url: `/api/articles/${slug}/comments`
   })
 }
+
+// 发表文章
+export function createArticle (data) {
+  return request({
+    method: 'POST',
+    url: '/api/articles',
+    data
+  })
+}
