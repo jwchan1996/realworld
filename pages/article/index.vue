@@ -112,6 +112,15 @@ export default {
   },
   components: {
     ArticleMeta
+  },
+  // 页面头部信息
+  head () {
+    return {
+      title: `${this.article.title} - RealWorld`,
+      meta: [
+        { hid: 'description', name: 'description', content: this.article.description }
+      ]
+    }
   }
 };
 </script>
