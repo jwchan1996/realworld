@@ -32,12 +32,16 @@
       <i class="ion-edit"></i>
       &nbsp;  Edit Article
     </button>
+    <button class="btn btn-sm btn-outline-danger" @click="clickDelete">
+      <i class="ion-trash-a"></i>
+      &nbsp;  Delete Article
+    </button>
   </div>
 </template>
 
 <script>
 import { addFollow, deleteFollow } from '@/api/user'
-import { addFavorite, deleteFavorite } from '@/api/article'
+import { addFavorite, deleteFavorite, deleteArticle } from '@/api/article'
 
 export default {
   name: 'ArticleMeta',
@@ -50,6 +54,19 @@ export default {
   methods: {
     clickEdit () {
       this.$router.push(`/editor/${this.article.slug}`)
+    },
+    clickDelete () {
+      if (!confirm('Are you sure you want to delete this article?')) return
+      this.deleteArticle()
+    },
+    // 删除文章
+    deleteArticle () {
+      deleteArticle(this.$route.params.slug).then(response => {
+        alert('delete article successed')
+        this.$router.push('/')
+      }).catch(error => {
+        alert('delete article failed')
+      })
     }
   }
 }

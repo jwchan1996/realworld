@@ -71,3 +71,11 @@ export function updateArticle (slug, data) {
     data
   })
 }
+
+// 删除文章
+export function deleteArticle (slug) {
+  return request({
+    method: 'DELETE',
+    url: `/api/articles/${slug}`
+  })
+}

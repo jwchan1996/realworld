@@ -42,6 +42,11 @@ module.exports = {
               component: resolve(__dirname, 'pages/settings/index.vue')
             },
             {
+              path: '/editor',
+              name: 'publish',
+              component: resolve(__dirname, 'pages/editor/index.vue')
+            },
+            {
               path: '/editor/:slug',
               name: 'editor',
               component: resolve(__dirname, 'pages/editor/index.vue')
