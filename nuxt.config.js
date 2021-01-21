@@ -59,6 +59,7 @@ module.exports = {
 
   // 注册插件（nuxtjs 中只有这样 Vue.use 的插件才能个生效）
   plugins: [
-    '~/plugins/request.js'
+    '~/plugins/request.js',
+    '~/plugins/dayjs.js',
   ]
 }
