@@ -34,56 +34,89 @@
         <div class="col-xs-12 col-md-10 offset-md-1">
           <div class="articles-toggle">
             <ul class="nav nav-pills outline-active">
-              <li class="nav-item">
+              <!-- <li class="nav-item">
                 <a class="nav-link active" href="">My Articles</a>
               </li>
               <li class="nav-item">
                 <a class="nav-link" href="">Favorited Articles</a>
+              </li> -->
+
+              <li class="nav-item" style="cursor: pointer;">
+                <span
+                  class="nav-link"
+                  :class="{
+                    active: tab === 'my_articles'
+                  }"
+                  exact
+                  @click="selectTab('my_articles')"
+                  >My Articles</span
+                >
               </li>
+              <li class="nav-item" style="cursor: pointer;">
+                <span
+                  class="nav-link"
+                  :class="{
+                    active: tab === 'favorited_articles'
+                  }"
+                  exact
+                  @click="selectTab('favorited_articles')"
+                  >Favorited Articles</span
+                >
+              </li>
+
             </ul>
           </div>
 
-          <div class="article-preview">
+          <div
+            class="article-preview"
+            v-for="article in articles"
+            :key="article.slug"
+          >
             <div class="article-meta">
-              <a href=""><img src="http://i.imgur.com/Qr71crq.jpg" /></a>
+              <nuxt-link
+                :to="{
+                  name: 'profile',
+                  params: {
+                    username: article.author.username,
+                  },
+                }"
+                ><img :src="article.author.image"
+              /></nuxt-link>
               <div class="info">
-                <a href="" class="author">Eric Simons</a>
-                <span class="date">January 20th</span>
+                <nuxt-link
+                  :to="{
+                    name: 'profile',
+                    params: {
+                      username: article.author.username,
+                    },
+                  }"
+                >
+                  {{ article.author.username }}
+                </nuxt-link>
+                <span class="date">{{ article.createdAt | date('MMM DD, YYYY') }}</span>
               </div>
-              <button class="btn btn-outline-primary btn-sm pull-xs-right">
-                <i class="ion-heart"></i> 29
+              <button
+                class="btn btn-outline-primary btn-sm pull-xs-right"
+                :class="{ active: article.favorited }"
+                @click="onFavorite(article)"
+                :disabled="article.favoriteDisabled"
+              >
+                <i class="ion-heart"></i> {{ article.favoritesCount }}
               </button>
             </div>
-            <a href="" class="preview-link">
-              <h1>How to build webapps that scale</h1>
-              <p>This is the description for the post.</p>
+            <nuxt-link
+              class="preview-link"
+              :to="{
+                name: 'article',
+                params: {
+                  slug: article.slug,
+                },
+              }"
+            >
+              <h1>{{ article.title }}</h1>
+              <p>{{ article.description }}</p>
               <span>Read more...</span>
-            </a>
-          </div>
-
-          <div class="article-preview">
-            <div class="article-meta">
-              <a href=""><img src="http://i.imgur.com/N4VcUeJ.jpg" /></a>
-              <div class="info">
-                <a href="" class="author">Albert Pai</a>
-                <span class="date">January 20th</span>
-              </div>
-              <button class="btn btn-outline-primary btn-sm pull-xs-right">
-                <i class="ion-heart"></i> 32
-              </button>
-            </div>
-            <a href="" class="preview-link">
-              <h1>
-                The song you won't ever stop singing. No matter how hard you
-                try.
-              </h1>
-              <p>This is the description for the post.</p>
-              <span>Read more...</span>
-              <ul class="tag-list">
-                <li class="tag-default tag-pill tag-outline">Music</li>
-                <li class="tag-default tag-pill tag-outline">Song</li>
-              </ul>
-            </a>
+            </nuxt-link>
           </div>
         </div>
       </div>
@@ -92,7 +125,9 @@
 </template>
 
 <script>
-import { addFollow, deleteFollow, getProfile } from "@/api/user";
+import { addFollow, deleteFollow, getProfile } from '@/api/user'
+import { addFavorite, deleteFavorite } from '@/api/article'
+import { getArticles } from '@/api/article'
 import { mapState } from 'vuex'
 
 export default {
@@ -102,12 +137,14 @@ export default {
     return {
       // 当前个人主页用户信息
       profile: {
-        username: '',
+        username: '**',
         bio: '',
         image: '',
         following: false
       },
-      isOnFollowing: false
+      isOnFollowing: false,
+      tab: this.$route.query.tab || 'my_articles',
+      articles: []
     }
   },
   computed: {
@@ -115,6 +152,7 @@ export default {
   },
   created () {
     this.getProfile()
+    this.getArticles()
   },
   methods: {
     // 获取用户 profile 信息
@@ -138,6 +176,49 @@ export default {
       // 改变关注按钮为可点击状态
       this.isOnFollowing = false;
     },
+    // 获取文章列表
+    async getArticles () {
+      const params = this.tab === 'my_articles' ? {
+        author: this.$route.params.username
+      } : {
+        favorited: this.$route.params.username
+      }
+      const { data } = await getArticles(params)
+      const { articles } = data
+      // 增加点赞按钮不能点击标志
+      articles.forEach(article => article.favoriteDisabled = false)
+      this.articles = articles
+    },
+    // 点击 tab
+    selectTab (tab) {
+      this.$router.replace({
+        name: 'profile',
+        path: `/profile/${this.$route.params.username}`,
+        query: {
+          tab
+        }
+      })
+      this.tab = tab
+      this.getArticles()
+    },
+    // 点赞文章操作
+    async onFavorite (article) {
+      // 改变点赞按钮为不可点击状态
+      article.favoriteDisabled = true
+      if (article.favorited) {
+        // 取消点赞
+        await deleteFavorite(article.slug)
+        article.favorited = false
+        article.favoritesCount -= 1
+      } else {
+        // 添加点赞
+        await addFavorite(article.slug)
+        article.favorited = true
+        article.favoritesCount += 1
+      }
+      // 改变点赞按钮为可点击状态
+      article.favoriteDisabled = false
+    }
   }
 };
 </script>
