@@ -12,7 +12,7 @@ export const request = axios.create({
 
 // 通过插件机制获取到上下文对象（query、params、req、res、app、store...）
 // 插件导出函数必须作为 default 成员
-export default ({ store }) => {
+export default ({ store, route }) => {
 
   // 请求拦截器
   // Add a request interceptor
@@ -34,4 +34,21 @@ export default ({ store }) => {
     // Do something with request error
     return Promise.reject(error)
   })
+
+  // 返回拦截器
+  request.interceptors.response.use(
+    response => response,
+    error => {
+      if (error.response) {
+        switch (error.response.status) {
+          case 401:
+            // 返回 401 清除token信息并跳转到登录页面
+            $nuxt.$router.replace({
+              path: '/login'
+            })
+        }
+      }
+      return Promise.reject(error.response.data)   // 返回接口返回的错误信息
+    }
+  )
 }
