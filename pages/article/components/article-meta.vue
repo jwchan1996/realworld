@@ -41,6 +41,7 @@
       :class="{
         active: article.favorited,
       }"
+      @click="onFavorite"
     >
       <i class="ion-heart"></i>
       &nbsp; Favorite Post
@@ -108,6 +109,7 @@ export default {
     },
     // 关注操作
     async onFollow() {
+      // 改变关注按钮为不可点击状态
       this.isOnFollowing = true;
       if (this.article.following) {
         // 取消关注
@@ -118,8 +120,27 @@ export default {
         await addFollow(this.article.author.username);
         this.article.author.following = true;
       }
+      // 改变关注按钮为可点击状态
       this.isOnFollowing = false;
     },
+    // 点赞操作
+    async onFavorite () {
+      // 改变点赞按钮为不可点击状态
+      this.isOnFavorite = true
+      if (this.article.favorited) {
+        // 取消点赞
+        await deleteFavorite(this.article.slug)
+        this.article.favorited = false
+        this.article.favoritesCount -= 1
+      } else {
+        // 添加点赞
+        await addFavorite(this.article.slug)
+        this.article.favorited = true
+        this.article.favoritesCount += 1
+      }
+      // 改变点赞按钮为可点击状态
+      this.isOnFavorite = false
+    }
   },
 };
 </script>
