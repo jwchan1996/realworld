@@ -63,6 +63,14 @@ export function addComment (slug, data) {
   })
 }
 
+// 删除评论
+export function deleteComment (slug, id) {
+  return request({
+    method: 'DELETE',
+    url: `/api/articles/${slug}/comments/${id}`
+  })
+}
+
 // 发表文章
 export function createArticle (data) {
   return request({

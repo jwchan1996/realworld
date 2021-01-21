@@ -50,13 +50,23 @@
           {{ comment.author.username }}
         </nuxt-link>
         <span class="date-posted">{{ comment.createdAt | date('MMM DD, YYYY') }}</span>
+        <button
+          style="margin-left: 20px;"
+          class="btn btn-sm btn-outline-danger"
+          @click="deleteComment(comment)"
+          v-if="user && user.username === comment.author.username"
+          :disabled="comment.disabledDelete"
+        >
+          <i class="ion-trash-a"></i>
+          &nbsp; Delete
+        </button>
       </div>
     </div>
   </div>
 </template>
 
 <script>
-import { getComments, addComment } from "@/api/article";
+import { getComments, addComment, deleteComment } from "@/api/article";
 import { mapState } from 'vuex'
 
 export default {
@@ -84,7 +94,9 @@ export default {
   methods: {
     async getComments () {
       const { data } = await getComments(this.article.slug);
-      this.comments = data.comments;
+      const { comments } = data
+      comments.forEach(comment => comment.disabledDelete = false)
+      this.comments = comments;
     },
     addComment () {
       this.isCommenting = true
@@ -99,7 +111,12 @@ export default {
       }).catch(error => {
         this.isCommenting = false
       })
-
+    },
+    async deleteComment (comment) {
+      comment.disabledDelete = true
+      await deleteComment(this.slug, comment.id)
+      comment.disabledDelete = false
+      this.getComments()
     }
   }
 };
