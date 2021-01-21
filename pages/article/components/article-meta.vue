@@ -28,6 +28,10 @@
       <i class="ion-heart"></i>
       &nbsp; Favorite Post <span class="counter">({{ article.favoritesCount }})</span>
     </button>
+    <button class="btn btn-sm btn-outline-secondary" @click="clickEdit">
+      <i class="ion-edit"></i>
+      &nbsp;  Edit Article
+    </button>
   </div>
 </template>
 
@@ -41,6 +45,11 @@ export default {
     article: {
       type: Object,
       required: true
+    }
+  },
+  methods: {
+    clickEdit () {
+      this.$router.push(`/editor/${this.article.slug}`)
     }
   }
 }

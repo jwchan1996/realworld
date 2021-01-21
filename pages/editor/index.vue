@@ -41,10 +41,10 @@
               <button
                 class="btn btn-lg pull-xs-right btn-primary"
                 type="button"
-                @click="createArticle"
+                @click="operateArticle"
                 :disabled="isPublishing"
               >
-                Publish Article
+                {{ isEditingArticle ? 'Edit Article' : 'Publish Article' }}
               </button>
             </fieldset>
           </form>
@@ -55,7 +55,7 @@
 </template>
 
 <script>
-import { createArticle } from '@/api/article'
+import { createArticle, getArticle, updateArticle } from '@/api/article'
 
 export default {
   // 在路由匹配组件渲染之前会先执行中间件
@@ -68,7 +68,14 @@ export default {
       body: '',
       tagsStr: '',
       // 正在发布状态
-      isPublishing: false
+      isPublishing: false,
+      // 修改文章标志位
+      isEditingArticle: false
+    }
+  },
+  created () {
+    if (this.$route.params.slug) {
+      this.getArticle()
     }
   },
   methods: {
@@ -84,6 +91,43 @@ export default {
       })
       this.isPublishing = false
       this.$router.push('/')
+    },
+    // 获取文章
+    getArticle () {
+      getArticle(this.$route.params.slug).then(response => {
+        this.title = response.data.article.title
+        this.description = response.data.article.description
+        this.body = response.data.article.body
+        this.tagsStr = response.data.article.tagList.join(',')
+        
+        // 修改文章标志位
+        this.isEditingArticle = true
+      })
+    },
+    // 修改文章
+    updateArticle () {
+      this.isPublishing = true
+      updateArticle(this.$route.params.slug, {
+        article: {
+          title: this.title,
+          description: this.description,
+          body: this.body,
+          tagList: this.tagsStr.split(',')
+        }
+      }).then(response => {
+        this.isPublishing = false
+        this.$router.push(`/article/${response.data.article.slug}`)
+      }).catch(error => {
+        this.isPublishing = false
+      })
+    },
+    // 操作文章
+    operateArticle () {
+      if (this.isEditingArticle) {
+        this.updateArticle()
+      } else {
+        this.createArticle()
+      }
     }
   }
 };

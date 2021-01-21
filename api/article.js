@@ -62,3 +62,12 @@ export function createArticle (data) {
     data
   })
 }
+
+// 修改文章
+export function updateArticle (slug, data) {
+  return request({
+    method: 'PUT',
+    url: `/api/articles/${slug}`,
+    data
+  })
+}
