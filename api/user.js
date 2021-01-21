@@ -33,3 +33,11 @@ export function deleteFollow (username) {
     url: `/api/profiles/${username}/follow`
   })
 }
+
+// 获取用户 profile 信息
+export function getProfile (username) {
+  return request({
+    method: 'GET',
+    url: `/api/profiles/${username}`
+  })
+}

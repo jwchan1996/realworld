@@ -4,15 +4,25 @@
       <div class="container">
         <div class="row">
           <div class="col-xs-12 col-md-10 offset-md-1">
-            <img src="http://i.imgur.com/Qr71crq.jpg" class="user-img" />
-            <h4>Eric Simons</h4>
+            <img :src="profile.image" class="user-img" v-if="profile.image" />
+            <img src="https://ae01.alicdn.com/kf/U1615c605dcf74ca98186e1754ef329b1R.jpg" class="user-img" v-else />
+            <h4>{{ profile.username }}</h4>
             <p>
-              Cofounder @GoThinkster, lived in Aol's HQ for a few months, kinda
-              looks like Peeta from the Hunger Games
+              {{ profile.bio || 'This is no signature' }}
             </p>
-            <button class="btn btn-sm btn-outline-secondary action-btn">
+            <button
+              style="float: right;"
+              class="btn btn-sm btn-outline-secondary"
+              :class="{
+                active: profile.following,
+              }"
+              @click="onFollow"
+              :disabled="isOnFollowing"
+              v-if="user.username !== profile.username"
+            >
               <i class="ion-plus-round"></i>
-              &nbsp; Follow Eric Simons
+              &nbsp; {{ profile.following ? "unFollow" : "Follow" }}
+              {{ profile.username }}
             </button>
           </div>
         </div>
@@ -82,9 +92,53 @@
 </template>
 
 <script>
+import { addFollow, deleteFollow, getProfile } from "@/api/user";
+import { mapState } from 'vuex'
+
 export default {
   middleware: 'authenticated',
-  name: 'ProfileIndex'
+  name: 'ProfileIndex',
+  data () {
+    return {
+      // 当前个人主页用户信息
+      profile: {
+        username: '',
+        bio: '',
+        image: '',
+        following: false
+      },
+      isOnFollowing: false
+    }
+  },
+  computed: {
+    ...mapState(['user'])
+  },
+  created () {
+    this.getProfile()
+  },
+  methods: {
+    // 获取用户 profile 信息
+    async getProfile () {
+      const { data } = await getProfile(this.$route.params.username)
+      this.profile = data.profile
+    },
+    // 关注操作
+    async onFollow() {
+      // 改变关注按钮为不可点击状态
+      this.isOnFollowing = true;
+      if (this.profile.following) {
+        // 取消关注
+        await deleteFollow(this.profile.username);
+        this.profile.following = false;
+      } else {
+        // 添加关注
+        await addFollow(this.profile.username);
+        this.profile.following = true;
+      }
+      // 改变关注按钮为可点击状态
+      this.isOnFollowing = false;
+    },
+  }
 };
 </script>
 
