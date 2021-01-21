@@ -114,6 +114,27 @@
           </div>
         </div>
 
+        <div class="col-md-3">
+          <div class="sidebar">
+            <p>Popular Tags</p>
+            <div class="tag-list">
+              <nuxt-link
+                :to="{
+                  name: 'home',
+                  query: {
+                    tag: item,
+                    tab: 'tag'
+                  },
+                }"
+                class="tag-pill tag-default"
+                v-for="item in tags"
+                :key="item"
+                >{{ item }}</nuxt-link
+              >
+            </div>
+          </div>
+        </div>
+
         <!-- 分页列表 -->
         <nav>
           <ul class="pagination">
@@ -142,26 +163,6 @@
         </nav>
         <!-- 分页列表 -->
 
-        <div class="col-md-3">
-          <div class="sidebar">
-            <p>Popular Tags</p>
-            <div class="tag-list">
-              <nuxt-link
-                :to="{
-                  name: 'home',
-                  query: {
-                    tag: item,
-                    tab: 'tag'
-                  },
-                }"
-                class="tag-pill tag-default"
-                v-for="item in tags"
-                :key="item"
-                >{{ item }}</nuxt-link
-              >
-            </div>
-          </div>
-        </div>
       </div>
     </div>
   </div>
