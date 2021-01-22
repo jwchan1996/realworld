@@ -16,7 +16,8 @@ jobs:
     # 打包构建
     - name: Build
       uses: actions/setup-node@master
-    - run: yarn
+    - run: yarn config set ignore-engines true
+    - run: yarn --registry=https://registry.npm.taobao.org
     - run: yarn build
     - run: tar -zcvf release.tgz .nuxt static nuxt.config.js package.json yarn.lock pm2.config.json
 
