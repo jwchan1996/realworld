@@ -1,9 +1,8 @@
 {
   "apps": [
-      {
-          "name": "RealWorld",
-          "exec": "yarn",
-          "args": "start"
-      }
+    {
+      "name": "RealWorld",
+      "exec": "yarn start"
+    }
   ]
 }
