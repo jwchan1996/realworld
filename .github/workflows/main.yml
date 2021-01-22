@@ -16,7 +16,7 @@ jobs:
     # 打包构建
     - name: Build
       uses: actions/setup-node@master
-    - run: npm install
+    - run: npm install --registry=https://registry.npm.taobao.org
     - run: npm run build
     - run: tar -zcvf release.tgz .nuxt static nuxt.config.js package.json yarn.lock pm2.config.json
 
@@ -56,5 +56,5 @@ jobs:
           cd /root/realworld
           wget https://github.com/jwchan1996/realworld/releases/latest/download/release.tgz -O release.tgz
           tar zxvf release.tgz
-          npm install --production
+          npm install --registry=https://registry.npm.taobao.org
           pm2 reload pm2.config.json
