@@ -57,4 +57,5 @@ jobs:
           wget https://github.com/jwchan1996/realworld/releases/latest/download/release.tgz -O release.tgz
           tar zxvf release.tgz
           yarn --registry=https://registry.npm.taobao.org
-          yarn start
+          pm2 kill
+          pm2 reload pm2.config.json
