@@ -1,6 +1,6 @@
 # realworld
 
-自由真正的世界，使用 nuxtjs 实现的同构应用，api 来自 [https://github.com/gothinkster/realworld/tree/master/api](https://github.com/gothinkster/realworld/tree/master/api)
+自由真正的世界【realworld】，使用 nuxtjs 实现的同构应用，api 来自 [https://github.com/gothinkster/realworld/tree/master/api](https://github.com/gothinkster/realworld/tree/master/api)
 
 预览地址 -> [demo](http://39.108.65.176:3000/)
 
