@@ -1,0 +1,9 @@
+{
+  "app": [
+      {
+          "name": "RealWorld",
+          "scripts": "yarn",
+          "args": "start"
+      }
+  ]
+}
